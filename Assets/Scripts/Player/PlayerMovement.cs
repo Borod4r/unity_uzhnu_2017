@@ -5,51 +5,54 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-	[HideInInspector] public Vector3 MoveDirection = Vector3.zero;		//The direction the player should move
-	[HideInInspector] public Vector3 LookDirection = Vector3.forward;	//The direction the player should face
+	[SerializeField]
+	private float _speed = 6f;									//The speed that the player moves
+	
+	private Vector3 _moveDirection = Vector3.zero;				//The direction the player should move
+	private Vector3 _lookDirection = Vector3.forward;			//The direction the player should face
+	private Rigidbody _rigidBody;								//Reference to the rigidbody component	
 
-	[SerializeField] float speed = 6f;									//The speed that the player moves
-	[SerializeField] Animator animator;									//Reference to the animator component
-	[SerializeField] Rigidbody rigidBody;								//Reference to the rigidbody component
+	//---------------------------------------------------------------------
+	// Properties
+	//---------------------------------------------------------------------
 
-	bool canMove = true;												//Can the player move?
+	public Vector3 MoveDirection
+	{
+		get { return _moveDirection; }
+		set { _moveDirection = value; }
+	}
 
-	//Reset() defines the default values for properties in the inspector
-	void Reset ()
+	public Vector3 LookDirection
+	{
+		get { return _lookDirection; }
+		set { _lookDirection = value; }
+	}
+
+	//---------------------------------------------------------------------
+	// Messages
+	//---------------------------------------------------------------------
+	
+	private void Awake()
 	{
 		//Grab the needed component references
-		animator = GetComponent <Animator> ();
-		rigidBody = GetComponent <Rigidbody> ();
+		_rigidBody = GetComponent<Rigidbody>();
 	}
 
 	//Move with physics so the movement code goes in FixedUpdate()
-	void FixedUpdate ()
+	private void FixedUpdate ()
 	{
-		//If the player cannot move, leave
-		if (!canMove)
-			return;
-
 		//Remove any Y value from the desired move direction
-		MoveDirection.Set (MoveDirection.x, 0, MoveDirection.z);
+		_moveDirection.Set (_moveDirection.x, 0, _moveDirection.z);
 		//Move the player using the MovePosition() method of its rigidbody component. This moves the player is a more
 		//physically accurate way than transform.Translate() does
-		rigidBody.MovePosition (transform.position + MoveDirection.normalized * speed * Time.deltaTime);
+		_rigidBody.MovePosition (transform.position + _moveDirection.normalized * _speed * Time.deltaTime);
 
 		//Remove any Y value from the desired look direction
-		LookDirection.Set (LookDirection.x, 0, LookDirection.z);
+		_lookDirection.Set (_lookDirection.x, 0, _lookDirection.z);
 		//Rotate the player using the MoveRotation() method of its rigidbody component. This rotates the player is a more
 		//physically accurate way than transform.Rotate() does. We also use the LookRotation() method of the Quaternion
 		//class to help use convert our euler angles into a quaternion
-		rigidBody.MoveRotation (Quaternion.LookRotation (LookDirection));
-		//Set the IsWalking paramter of the animator. If the move direction has any magnitude (amount), then the player is walking
-		animator.SetBool ("IsWalking", MoveDirection.sqrMagnitude > 0);
+		_rigidBody.MoveRotation (Quaternion.LookRotation (_lookDirection));
     }
-
-	//Called when the player is defeated
-	public void Defeated()
-	{
-		//Player can no longer move
-		canMove = false;
-	}
 }
 
