@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
 													//can access it from anywhere without needing to find a reference to it
 
 	[Header("Player and Enemy Properties")]
-	public Transform Player;						//A reference to the player's health script which will be considered "the player"
+	public PlayerHealth Player;						//A reference to the player's health script which will be considered "the player"
 
 	//---------------------------------------------------------------------
 	// Messages

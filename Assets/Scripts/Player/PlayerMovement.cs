@@ -11,6 +11,9 @@ public class PlayerMovement : MonoBehaviour
 	private Vector3 _moveDirection = Vector3.zero;				//The direction the player should move
 	private Vector3 _lookDirection = Vector3.forward;			//The direction the player should face
 	private Rigidbody _rigidBody;								//Reference to the rigidbody component	
+	private Animator _animator;									//Reference to the animator component
+	
+	private bool _canMove = true;								//Can the player move?
 
 	//---------------------------------------------------------------------
 	// Properties
@@ -36,11 +39,14 @@ public class PlayerMovement : MonoBehaviour
 	{
 		//Grab the needed component references
 		_rigidBody = GetComponent<Rigidbody>();
+		_animator = GetComponent<Animator>();
 	}
 
 	//Move with physics so the movement code goes in FixedUpdate()
 	private void FixedUpdate ()
 	{
+		if (!_canMove) return;
+		
 		//Remove any Y value from the desired move direction
 		_moveDirection.Set (_moveDirection.x, 0, _moveDirection.z);
 		//Move the player using the MovePosition() method of its rigidbody component. This moves the player is a more
@@ -53,6 +59,20 @@ public class PlayerMovement : MonoBehaviour
 		//physically accurate way than transform.Rotate() does. We also use the LookRotation() method of the Quaternion
 		//class to help use convert our euler angles into a quaternion
 		_rigidBody.MoveRotation (Quaternion.LookRotation (_lookDirection));
+		
+		//Set the IsWalking paramter of the animator. If the move direction has any magnitude (amount), then the player is walking
+		_animator.SetBool("IsWalking", MoveDirection.sqrMagnitude > 0);
     }
+	
+	//---------------------------------------------------------------------
+	// Public
+	//---------------------------------------------------------------------
+	
+	//Called when the player is defeated
+	public void Defeated()
+	{
+		//Player can no longer move
+		_canMove = false;
+	}
 }
 

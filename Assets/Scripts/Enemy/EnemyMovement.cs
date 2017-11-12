@@ -55,7 +55,7 @@ public class EnemyMovement : MonoBehaviour
 			var target = GameManager.Instance.Player;
 			
 			//if the target exists, head towards it
-			if (target != null) _navMeshAgent.SetDestination(target.position);
+			if (target != null) _navMeshAgent.SetDestination(target.transform.position);
 			// finally, wait a time interval before looping
 			yield return UPDATE_DELAY;
 		}
